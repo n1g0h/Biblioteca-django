@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Libros</title>
+</head>
+<body>
+
+    <h1>Mis Libros</h1>
+
+    <!-- Buscador de libros por título -->
+    <form method="GET" action="">
+        <input type="text" name="q" placeholder="Buscar libro por título..." value="{{ query }}">
+        <button type="submit">Buscar</button>
+        {% if query %}
+            <a href="{% url 'listar' %}">Ver todos</a>
+        {% endif %}
+    </form>
+
+    <br>
+
+    <!-- Tabla actualizada con los nombres de campos correctos -->
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Autor</th>
+                <th>Año</th>
+                <th>Disponibilidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for libro in libros %}
+            <tr>
+                <td>{{ libro.titulo }}</td>
+                <td>{{ libro.autor }}</td>
+                <td>{{ libro.fecha_publicacion }}</td>
+                <td>{{ libro.get_disponibilidad_display }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No se encontraron libros.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
