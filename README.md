@@ -12,7 +12,7 @@ cd Biblioteca-django
 ### 2. Crear y activar el entorno virtual. (PowerShell)
 
 python -m venv venv
-.\venv\Scripts\activate
+\venv\Scripts\activate
 
 ### 3. Instalar dependencias
 
