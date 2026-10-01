@@ -89,10 +89,10 @@ WSGI_APPLICATION = 'mi_escuela.wsgi.application'
 # REQUISITO RÚBRICA: Conexión activa a PostgreSQL en la nube (Supabase) via .env
 
 DATABASES = {
-'default': {
-'ENGINE': 'django.db.backends.sqlite3',
-'NAME': BASE_DIR / 'db.sqlite3',
-}
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 

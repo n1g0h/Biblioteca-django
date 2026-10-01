@@ -1,3 +1,4 @@
+
 from django.contrib import admin
 from django.urls import path
 from django.contrib.auth import views as auth_views
@@ -38,3 +39,14 @@ urlpatterns = [
         name='reporte_general'
     ),
 ]
+
+
+from django.contrib import admin
+from django.urls import path
+from libros.views import listar
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('libros/', listar, name='listar'),
+]
+
