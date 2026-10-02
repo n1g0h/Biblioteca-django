@@ -1,31 +1,14 @@
-## 🚀 Instrucciones de Ejecución
+🚀 Instrucciones de Ejecución
 
-Sigue estos pasos para instalar y ejecutar el proyecto en tu máquina local:
+1. Descomprimir el archivo ZIP y abrir la terminal en la carpeta del proyecto.
 
-### 1. Clonar el repositorio
+2. Crear y activar el entorno virtual (PowerShell):
+   python -m venv venv
+   .\venv\Scripts\activate
 
-git clone [https://github.com/n1g0h/Biblioteca-django.git](https://github.com/n1g0h/Biblioteca-django.git)
+3. Instalar las dependencias:
+   pip install -r requirements.txt
 
-cd Biblioteca-django
-
-
-### 2. Crear y activar el entorno virtual. (PowerShell)
-
-python -m venv venv
-
-\venv\Scripts\activate
-
-### 3. Instalar dependencias
-
-  pip install django
-
-### 4.Generar la base de datos local
-
-  python manage.py migrate
-
-### 5. Crear usuario administrador
-  python manage.py createsuperuser
-
-### 6. Iniciar el servidor
-  python manage.py runserver
+4. Iniciar el servidor:
+   python manage.py runserver
 
