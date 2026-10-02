@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Catálogo de Libros - Biblioteca{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Catálogo de Libros</h2>
+        <form class="d-flex" method="get" action="{% url 'catalogo' %}">
+            <input class="form-control me-2" type="search" name="q" placeholder="Buscar por título, autor..." value="{{ query }}">
+            <button class="btn btn-outline-primary" type="submit">Buscar</button>
+        </form>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for libro in libros %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">{{ libro.titulo }}</h5>
+                        <p class="card-text text-muted mb-1">Autor: {{ libro.autor }}</p>
+                        <p class="card-text mb-1">Categoría: <span class="badge bg-secondary">{{ libro.categoria }}</span></p>
+                        <p class="card-text mb-1">Disponibles: <strong>{{ libro.cantidad_disponible }}</strong> / {{ libro.cantidad_total }}</p>
+                        <p class="card-text fw-bold text-success fs-5">${{ libro.precio }}</p>
+                    </div>
+                    
+                    <div class="card-footer bg-white border-0 pb-3 d-flex gap-2">
+                        {% if user.is_authenticated %}
+                            <!-- Botón Reservar -->
+                            <a href="{% url 'reservar_libro' libro.id %}" class="btn btn-outline-primary btn-sm flex-fill">
+                                📌 Reservar
+                            </a>
+                            <!-- Botón Comprar -->
+                            {% if libro.cantidad_disponible > 0 %}
+                                <a href="{% url 'comprar_libro' libro.id %}" class="btn btn-success btn-sm flex-fill">
+                                    🛒 Comprar
+                                </a>
+                            {% else %}
+                                <button class="btn btn-secondary btn-sm flex-fill" disabled>Sin Stock</button>
+                            {% endif %}
+                        {% else %}
+                            <a href="{% url 'login' %}" class="btn btn-primary btn-sm w-100">Inicia sesión para operar</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5">
+                <p class="text-muted">No hay libros disponibles en el catálogo.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

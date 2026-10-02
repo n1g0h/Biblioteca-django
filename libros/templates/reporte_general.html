@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Reporte General | Biblioteca{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">📊 Reporte General de Biblioteca</h2>
+
+<!-- Tarjetas de Métricas Globales -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card bg-primary text-white shadow-sm border-0">
+            <div class="card-body py-3">
+                <h6 class="card-subtitle mb-1 opacity-75">Total Ejemplares</h6>
+                <h3 class="card-title fw-bold mb-0">{{ resumen_inventario.total|default:"0" }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card bg-success text-white shadow-sm border-0">
+            <div class="card-body py-3">
+                <h6 class="card-subtitle mb-1 opacity-75">Ejemplares Disponibles</h6>
+                <h3 class="card-title fw-bold mb-0">{{ resumen_inventario.disponibles|default:"0" }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Top Libros más Prestados -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white py-3 fw-bold">
+                🔥 Libros Más Solicitados
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    {% for libro in libros_mas_prestados %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{{ libro.titulo }}</span>
+                            <span class="badge bg-primary rounded-pill">{{ libro.total_prestamos }} préstamos</span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-center text-muted py-3">No hay datos suficientes.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disponibilidad del Inventario -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white py-3 fw-bold">
+                📦 Disponibilidad por Título
+            </div>
+            <div class="card-body">
+                {% for libro in libros_disponibilidad %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="fw-medium">{{ libro.titulo }}</span>
+                            <span>{{ libro.cantidad_disponible }} / {{ libro.cantidad_total }}</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-info" role="progressbar" 
+                                 style="width: {{ libro.porcentaje_disponible|default:0 }}%;"></div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted text-center py-3">No hay libros registrados.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

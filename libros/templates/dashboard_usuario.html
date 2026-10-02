@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Dashboard - Biblioteca{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="fw-bold">
+                Bienvenido/a, {{ user.first_name|default:user.username }}
+            </h1>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Columna Izquierda: Préstamos, Reservas y Compras -->
+        <div class="col-lg-8">
+            
+            <!-- Sección Préstamos Activos -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="card-title m-0 fw-bold">📖 Mis Préstamos Activos</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if prestamos_activos %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Libro</th>
+                                        <th>Fecha Préstamo</th>
+                                        <th>Devolución Esperada</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for prestamo in prestamos_activos %}
+                                        <tr>
+                                            <td class="fw-semibold">{{ prestamo.libro.titulo }}</td>
+                                            <td>{{ prestamo.fecha_prestamo|date:"d/m/Y" }}</td>
+                                            <td>{{ prestamo.fecha_devolucion_esperada|date:"d/m/Y" }}</td>
+                                            <td>
+                                                <span class="badge {% if prestamo.estado == 'ACTIVO' %}bg-primary{% else %}bg-warning text-dark{% endif %}">
+                                                    {{ prestamo.get_estado_display }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4 text-muted">
+                            <p class="mb-0">No tienes préstamos activos actualmente.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Sección Mis Reservas -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="card-title m-0 fw-bold text-primary">📌 Mis Reservas</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if reservas_activas %}
+                        <ul class="list-group list-group-flush">
+                            {% for reserva in reservas_activas %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">{{ reserva.libro.titulo }}</h6>
+                                        <small class="text-muted">Fecha de reserva: {{ reserva.fecha_reserva|date:"d/m/Y" }}</small>
+                                    </div>
+                                    <span class="badge bg-info text-dark">{{ reserva.get_estado_display }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="text-center py-4 text-muted">
+                            <p class="mb-0">No tienes reservas activas.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Sección Mis Compras Realizadas -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="card-title m-0 fw-bold text-success">🛒 Mis Libros Comprados</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if compras_realizadas %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Libro</th>
+                                        <th>Fecha de Compra</th>
+                                        <th>Precio Pagado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for compra in compras_realizadas %}
+                                        <tr>
+                                            <td class="fw-semibold">{{ compra.libro.titulo }}</td>
+                                            <td>{{ compra.fecha_compra|date:"d/m/Y H:i" }}</td>
+                                            <td class="text-success fw-bold">${{ compra.precio_pagado }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4 text-muted">
+                            <p class="mb-0">No has comprado libros aún.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Columna Derecha: Multas -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h5 class="card-title m-0 fw-bold text-danger">⚠️️ Multas Pendientes</h5>
+                </div>
+                <div class="card-body text-center d-flex flex-column justify-content-center py-4">
+                    <h2 class="display-5 fw-bold text-danger mb-3">
+                        ${{ total_multas|default:"0" }}
+                    </h2>
+
+                    {% if multas_pendientes %}
+                        <ul class="list-group list-group-flush text-start mb-3">
+                            {% for multa in multas_pendientes %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>{{ multa.prestamo.libro.titulo }}</span>
+                                    <span class="fw-bold text-danger">${{ multa.monto }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted mb-0">No tienes multas pendientes de pago.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

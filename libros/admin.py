@@ -1,18 +1,20 @@
 from django.contrib import admin
-from .models import Libro, PerfilUsuario, Prestamo, Multa, Reserva
+from django.utils import timezone
+from datetime import timedelta
+from .models import Libro, PerfilUsuario, Prestamo, Multa, Reserva, Compra
+
 
 @admin.register(Libro)
 class LibroAdmin(admin.ModelAdmin):
-    list_display = ('titulo', 'categoria', 'cantidad_disponible')
+    list_display = ('titulo', 'autor', 'categoria', 'cantidad_disponible', 'cantidad_total', 'precio')
     search_fields = ('titulo', 'autor', 'ISBN', 'categoria')
     list_filter = ('categoria', 'cantidad_disponible')
 
 
 @admin.register(PerfilUsuario)
 class PerfilUsuarioAdmin(admin.ModelAdmin):
-    list_display = ('user', 'dni', 'telefono', 'fecha_afiliacion', 'estado')
+    list_display = ('user', 'dni', 'telefono')
     search_fields = ('user__username', 'dni', 'telefono')
-    list_filter = ('estado',)
 
 
 @admin.register(Prestamo)
@@ -33,14 +35,14 @@ class PrestamoAdmin(admin.ModelAdmin):
     @admin.action(description="Marcar préstamo(s) seleccionado(s) como devuelto(s)")
     def marcar_como_devuelto_action(self, request, queryset):
         for prestamo in queryset:
-            prestamo.registrar_devolucion()
-
-
-@admin.register(Multa)
-class MultaAdmin(admin.ModelAdmin):
-    list_display = ('prestamo', 'monto', 'motivo', 'pagado', 'fecha_creacion')
-    search_fields = ('prestamo__usuario__username', 'motivo')
-    list_filter = ('pagado', 'fecha_creacion')
+            prestamo.estado = 'DEVUELTO'
+            prestamo.fecha_devolucion_real = timezone.now().date()
+            prestamo.save()
+            
+            # Devolver el stock al catálogo
+            libro = prestamo.libro
+            libro.cantidad_disponible += 1
+            libro.save()
 
 
 @admin.register(Reserva)
@@ -49,4 +51,33 @@ class ReservaAdmin(admin.ModelAdmin):
     search_fields = ('usuario__username', 'libro__titulo')
     list_filter = ('estado', 'fecha_reserva')
     raw_id_fields = ('usuario', 'libro')
+    actions = ['convertir_reserva_en_prestamo']
+
+    @admin.action(description="Convertir reserva(s) en préstamo activo (7 días)")
+    def convertir_reserva_en_prestamo(self, request, queryset):
+        for reserva in queryset.filter(estado='PENDIENTE'):
+            Prestamo.objects.create(
+                usuario=reserva.usuario,
+                libro=reserva.libro,
+                fecha_prestamo=timezone.now().date(),
+                fecha_devolucion_esperada=timezone.now().date() + timedelta(days=7),
+                estado='ACTIVO'
+            )
+            reserva.estado = 'COMPLETADA'
+            reserva.save()
+
+
+@admin.register(Compra)
+class CompraAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'libro', 'precio_pagado', 'fecha_compra')
+    search_fields = ('usuario__username', 'libro__titulo')
+    list_filter = ('fecha_compra',)
+    raw_id_fields = ('usuario', 'libro')
+
+
+@admin.register(Multa)
+class MultaAdmin(admin.ModelAdmin):
+    list_display = ('prestamo', 'monto', 'pagado')
+    search_fields = ('prestamo__usuario__username',)
+    list_filter = ('pagado',)
 

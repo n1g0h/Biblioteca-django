@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Registro de Usuario | Biblioteca{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-4">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h3 class="card-title text-center mb-4 fw-bold">Registro de Afiliación</h3>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label fw-medium">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                                <div class="form-text text-muted small">{{ field.help_text }}</div>
+                            {% endif %}
+                            {% if field.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ field.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-primary w-100 fw-bold py-2 mt-3">Completar Registro</button>
+                </form>
+
+                <hr class="my-4">
+                <p class="text-center mb-0 small">
+                    ¿Ya estás registrado? <a href="{% url 'login' %}" class="text-primary text-decoration-none fw-bold">Inicia sesión aquí</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
